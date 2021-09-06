@@ -1,7 +1,9 @@
-const express = require('express')
-const mongoose = require('mongoose')
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const app = express();
+app.use(cors());
 const jsonParser = express.json();
 const port = 3000
 
@@ -92,7 +94,7 @@ app.put("/api/customers", jsonParser, (req, res) => {
 app.get("/api/contractors", function(req, res){
 
     Contractor.find({}, function(err, contractors){
-
+        console.log('asked');
         if(err) return console.log(err);
         res.send(contractors)
     });
