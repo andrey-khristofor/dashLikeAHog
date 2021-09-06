@@ -82,7 +82,8 @@ app.put("/api/customers", jsonParser, (req, res) => {
     const customerEmail = req.body.email;
 
     Customer.findOneAndUpdate({_id: id}, {name: customerName, phoneNumber: customerPhoneNumber, email: customerEmail}, {new: true}, (err, customer) => {
-        res.send(err ? customer : err);
+        if(err) return console.log(err);
+        res.send(customer);
     });
 });
 // -------------------------------------------------------------------------------------------------------
@@ -90,7 +91,7 @@ app.put("/api/customers", jsonParser, (req, res) => {
 // -----------------------------------Contractor CRUD-----------------------------------------------------
 app.get("/api/contractors", function(req, res){
 
-    Customer.find({}, function(err, contractors){
+    Contractor.find({}, function(err, contractors){
 
         if(err) return console.log(err);
         res.send(contractors)
@@ -100,7 +101,7 @@ app.get("/api/contractors", function(req, res){
 app.get("/api/contractors/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findOne({_id: id}, function(err, contractor){
+    Contractor.findOne({_id: id}, function(err, contractor){
 
         if(err) return console.log(err);
         res.send(contractor);
@@ -126,7 +127,7 @@ app.post("/api/contractors", jsonParser, (req, res) => {
 app.delete("/api/contractors/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findByIdAndDelete(id, null, (err, contractor) => {
+    Contractor.findByIdAndDelete(id, null, (err, contractor) => {
 
         if(err) return console.log(err);
         res.send(contractor);
@@ -142,7 +143,7 @@ app.put("/api/contractors", jsonParser, function(req, res){
     const contractorEmail = req.body.email;
     const contractorSpecializationIds = [...req.body.specializationIds];
 
-    Customer.findOneAndUpdate({_id: id}, {name: contractorName, phoneNumber: contractorPhoneNumber, email: contractorEmail, rating: 0, specializationIds: contractorSpecializationIds }, {new: true}, (err, contractor) => {
+    Contractor.findOneAndUpdate({_id: id}, {name: contractorName, phoneNumber: contractorPhoneNumber, email: contractorEmail, rating: 0, specializationIds: contractorSpecializationIds }, {new: true}, (err, contractor) => {
         if(err) return console.log(err);
         res.send(contractor);
     });
@@ -152,7 +153,7 @@ app.put("/api/contractors", jsonParser, function(req, res){
 // -----------------------------------Contract CRUD-----------------------------------------------------
 app.get("/api/contracts", function(req, res){
 
-    Customer.find({}, function(err, contracts){
+    Contract.find({}, function(err, contracts){
 
         if(err) return console.log(err);
         res.send(contracts)
@@ -162,7 +163,7 @@ app.get("/api/contracts", function(req, res){
 app.get("/api/contracts/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findOne({_id: id}, function(err, contract){
+    Contract.findOne({_id: id}, function(err, contract){
 
         if(err) return console.log(err);
         res.send(contract);
@@ -187,7 +188,7 @@ app.post("/api/contracts", jsonParser, function (req, res) {
 app.delete("/api/contracts/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findByIdAndDelete(id, null, (err, contract) => {
+    Contract.findByIdAndDelete(id, null, (err, contract) => {
 
         if(err) return console.log(err);
         res.send(contract);
@@ -202,7 +203,7 @@ app.put("/api/contracts", jsonParser, function(req, res){
     const contractContractorId = req.body.contractorId;
     const contractTaskId = req.body.taskId;
 
-    Customer.findOneAndUpdate({_id: id}, {customerId: contractCustomerId, contractorId: contractContractorId, taskId: contractTaskId}, {new: true}, (err, contract) => {
+    Contract.findOneAndUpdate({_id: id}, {customerId: contractCustomerId, contractorId: contractContractorId, taskId: contractTaskId}, {new: true}, (err, contract) => {
         if(err) return console.log(err);
         res.send(contract);
     });
@@ -212,7 +213,7 @@ app.put("/api/contracts", jsonParser, function(req, res){
 // -----------------------------------Task CRUD-----------------------------------------------------
 app.get("/api/tasks", function(req, res){
 
-    Customer.find({}, function(err, tasks){
+    Task.find({}, function(err, tasks){
 
         if(err) return console.log(err);
         res.send(tasks)
@@ -222,7 +223,7 @@ app.get("/api/tasks", function(req, res){
 app.get("/api/tasks/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findOne({_id: id}, function(err, task){
+    Task.findOne({_id: id}, function(err, task){
 
         if(err) return console.log(err);
         res.send(task);
@@ -237,7 +238,7 @@ app.post("/api/tasks", jsonParser, function (req, res) {
     const taskPrice = req.body.price;
     const taskCurrencyId = req.body.currencyId;
     const taskDescription = req.body.description;
-    const taskPhotoURLs = [...req.body.photoURL];
+    const taskPhotoURLs = req.body.photoURL?.length ? [...req.body.photoURL] : [];
     const taskDeadline = new Date(req.body.deadline);
     const task = new Task({specializationId: taskSpecializationId, price: taskPrice, currencyId: taskCurrencyId, deadline: taskDeadline, description: taskDescription, photoUrl: taskPhotoURLs});
 
@@ -250,7 +251,7 @@ app.post("/api/tasks", jsonParser, function (req, res) {
 app.delete("/api/tasks/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findByIdAndDelete(id, null, (err, task) => {
+    Task.findByIdAndDelete(id, null, (err, task) => {
 
         if(err) return console.log(err);
         res.send(task);
@@ -268,7 +269,7 @@ app.put("/api/tasks", jsonParser, function(req, res){
     const taskPhotoURLs = [...req.body.photoURL];
     const taskDeadline = new Date(req.body.deadline);
 
-    Customer.findOneAndUpdate({_id: id}, {specializationId: taskSpecializationId, price: taskPrice, currencyId: taskCurrencyId, deadline: taskDeadline, description: taskDescription, photoUrl: taskPhotoURLs}, {new: true}, (err, task) => {
+    Task.findOneAndUpdate({_id: id}, {specializationId: taskSpecializationId, price: taskPrice, currencyId: taskCurrencyId, deadline: taskDeadline, description: taskDescription, photoUrl: taskPhotoURLs}, {new: true}, (err, task) => {
         if(err) return console.log(err);
         res.send(task);
     });
@@ -278,7 +279,7 @@ app.put("/api/tasks", jsonParser, function(req, res){
 // -----------------------------------Specialization CRUD-----------------------------------------------------
 app.get("/api/specializations", function(req, res){
 
-    Customer.find({}, function(err, specializations){
+    Specialization.find({}, function(err, specializations){
 
         if(err) return console.log(err);
         res.send(specializations)
@@ -288,7 +289,7 @@ app.get("/api/specializations", function(req, res){
 app.get("/api/specializations/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findOne({_id: id}, function(err, specialization){
+    Specialization.findOne({_id: id}, function(err, specialization){
 
         if(err) return console.log(err);
         res.send(specialization);
@@ -312,7 +313,7 @@ app.post("/api/specializations", jsonParser, function (req, res) {
 app.delete("/api/specializations/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findByIdAndDelete(id, null, (err, specialization) => {
+    Specialization.findByIdAndDelete(id, null, (err, specialization) => {
 
         if(err) return console.log(err);
         res.send(specialization);
@@ -325,7 +326,7 @@ app.put("/api/specializations", jsonParser, function(req, res){
     const id = req.body.id;const specializationName = req.body.name;
     const specializationPopularity = req.body.popularity;
 
-    Customer.findOneAndUpdate({_id: id}, {name: specializationName, popularity: specializationPopularity}, {new: true}, (err, specialization) => {
+    Specialization.findOneAndUpdate({_id: id}, {name: specializationName, popularity: specializationPopularity}, {new: true}, (err, specialization) => {
         if(err) return console.log(err);
         res.send(specialization);
     });
@@ -335,7 +336,7 @@ app.put("/api/specializations", jsonParser, function(req, res){
 // -----------------------------------Currency CRUD-----------------------------------------------------
 app.get("/api/currencies", function(req, res){
 
-    Customer.find({}, function(err, currencies){
+    Currency.find({}, function(err, currencies){
 
         if(err) return console.log(err);
         res.send(currencies)
@@ -345,7 +346,7 @@ app.get("/api/currencies", function(req, res){
 app.get("/api/currencies/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findOne({_id: id}, function(err, currency){
+    Currency.findOne({_id: id}, function(err, currency){
 
         if(err) return console.log(err);
         res.send(currency);
@@ -369,7 +370,7 @@ app.post("/api/currencies", jsonParser, function (req, res) {
 app.delete("/api/currencies/:id", function(req, res){
 
     const id = req.params.id;
-    Customer.findByIdAndDelete(id, null, (err, currency) => {
+    Currency.findByIdAndDelete(id, null, (err, currency) => {
 
         if(err) return console.log(err);
         res.send(currency);
@@ -384,7 +385,7 @@ app.put("/api/currencies", jsonParser, function(req, res){
     const currencyName = req.body.name;
     const currencyToUsd = req.body.currencyToUsd;
 
-    Customer.findOneAndUpdate({_id: id}, {name: currencyName, currencyToUsd: currencyToUsd}, {new: true}, (err, currency) => {
+    Currency.findOneAndUpdate({_id: id}, {name: currencyName, currencyToUsd: currencyToUsd}, {new: true}, (err, currency) => {
         if(err) return console.log(err);
         res.send(currency);
     });
